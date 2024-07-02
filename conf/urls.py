@@ -23,5 +23,7 @@ urlpatterns = [
     path('', include('app.urls'))
 ]
 
+handler404 = 'app.views.custom_404'
+handler500 = 'app.views.custom_500'
 
 

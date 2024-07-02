@@ -1,3 +1,4 @@
+# HELP ME GOD.
 from django.http import HttpRequest, JsonResponse
 from ipware import get_client_ip
 import requests
@@ -48,3 +49,16 @@ def simpleserver(request: HttpRequest):
         },
         json_dumps_params={"indent": 4}
     )
+
+# custom errors
+def custom_404(request, exception):
+    return JsonResponse({
+        "error": "Page not found",
+        "status_code": 404
+    }, status=404)
+
+def custom_500(request):
+    return JsonResponse({
+        "error": "Server error",
+        "status_code": 500
+    }, status=500)
