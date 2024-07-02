@@ -14,35 +14,43 @@ def simpleserver(request: HttpRequest):
             client_ip = response.json().get('ip')
 
     if client_ip is None:
-        return JsonResponse({"error": "Unable to get client IP"}, status=400)
+        return JsonResponse({
+            "error": "Unable to get client IP",
+            "status_code": 400
+        }, status=400)
 
-    # get the client name
+    # Get the client name
     client_name = request.GET.get("visitor_name", "Guest")
 
-    # strip of quotation marks from the client name
     if client_name.startswith('"') and client_name.endswith('"'):
         client_name = client_name[1:-1]
-        
 
+    # Fetch the city for the client's IP
     response = requests.get(f"https://get.geojs.io/v1/ip/geo/{client_ip}.json")
 
     if response.status_code != 200:
-        return JsonResponse({"error": "Unable to get location"}, status=400)
+        return JsonResponse({
+            "error": "Unable to get location",
+            "status_code": 400
+        }, status=400)
 
     geo_data = response.json()
     client_city = geo_data.get("city", "Unknown location")
 
-    # openweather API config
+    # Fetch the weather data
     weather_api_key = settings.OPENWEATHER_API_KEY
     BASE_URL = "https://api.openweathermap.org/data/2.5/weather?"
     CITY = client_city
     API_KEY = weather_api_key
 
-    weather_api_url = f"{BASE_URL}q={CITY}&appid={API_KEY}"
+    weather_api_url = f"{BASE_URL}q={CITY}&appid={API_KEY}&units=metric"  # Use units=metric for Celsius
     weather_response = requests.get(weather_api_url).json()
 
     if "main" not in weather_response:
-        return JsonResponse({"error": "Unable to get weather"}, status=400)
+        return JsonResponse({
+            "error": "Unable to get weather",
+            "status_code": 400
+        }, status=400)
 
     client_city_temp = weather_response["main"].get("temp", "Unknown temperature")
 
@@ -50,12 +58,11 @@ def simpleserver(request: HttpRequest):
         {
             "client_ip": client_ip,
             "location": client_city,
-            "greeting": f"Hello, {client_name}!, the temperature is {str(client_city_temp)} degrees Celsius in {client_city}",
+            "greeting": f"Hello, {client_name}!, the temperature is {client_city_temp} degrees Celsius in {client_city}",
         },
         json_dumps_params={"indent": 4}
     )
 
-# custom errors
 def custom_404(request, exception):
     return JsonResponse({
         "error": "Page not found",
@@ -67,3 +74,5 @@ def custom_500(request):
         "error": "Server error",
         "status_code": 500
     }, status=500)
+
+    
