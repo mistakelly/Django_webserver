@@ -16,10 +16,12 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
-from .views import simpleserver
+from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/hello/", simpleserver, name="server"),
+    path('', include('app.urls'))
 ]
+
+
+

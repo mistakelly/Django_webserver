@@ -1,3 +1,4 @@
+
 # HELP ME GOD.
 # STAGE 1 HNG INTERNSHIP
 from django.http import HttpRequest, JsonResponse
@@ -8,7 +9,7 @@ from django.conf import settings
 
 def simpleserver(request: HttpRequest):
     # get the client name
-    client_name = request.GET.get("visitor_name", "unknown")
+    client_name = request.GET.get("visitor_name", "Guest")
 
     # access users ip local ip_address, if application is behin d a proxy, or loadbalancer.
     client_ip = get_client_ip(request)[0]
@@ -36,6 +37,7 @@ def simpleserver(request: HttpRequest):
     weather_response = requests.get(whether_api_url).json()
 
     client_city_tmp = weather_response["main"]["temp"]
+    print(client_city_tmp)
 
     # return a response.
     print()
@@ -43,6 +45,6 @@ def simpleserver(request: HttpRequest):
         {
             "client_ip": client_ip,
             "location": client_city,
-            "greeting": f"Hello, {client_name}!, the temperature is {str(client_city_tmp).split('.')[0]} degrees Celcius in {client_city}",
+            "greeting": f"Hello, {client_name}!, the temperature is {str(client_city_tmp)} degrees Celcius in {client_city}",
         }, json_dumps_params={"indent": 4}
     )
