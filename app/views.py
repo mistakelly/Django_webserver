@@ -11,9 +11,11 @@ from django.conf import settings
 def simpleserver(request: HttpRequest):
 
     
-    r = requests.get(r'http://jsonip.com')
-    ip= r.json()['ip']
-    print ('Your IP is', ip)
+    response = requests.get('https://api.ipify.org?format=json')
+    if response.status_code == 200:
+        ip_data = response.json()
+    ip  = ip_data['ip']
+
     # get the client name
     client_name = request.GET.get("visitor_name", "Guest")
 
@@ -21,7 +23,7 @@ def simpleserver(request: HttpRequest):
     # client_ip = get_client_ip(request)[0]
 
     # get the client public ip address, using geojs api, when i tried getting the users information using the local ipaddress, geojs api returned some invalid response, so i had to use the public ip address.
-    client_public_ip = requests.get(f"https://get.geojs.io/v1/ip.json")
+    # client_public_ip = requests.get(f"https://get.geojs.io/v1/ip.json")
 
     response = requests.get(
         f"https://get.geojs.io/v1/ip/geo/{ip}.json"
