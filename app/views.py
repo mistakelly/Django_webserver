@@ -18,9 +18,10 @@ def simpleserver(request: HttpRequest):
     client_public_ip = requests.get(f"https://get.geojs.io/v1/ip.json")
 
     response = requests.get(
-        f"https://get.geojs.io/v1/ip/geo/{client_ip.json()['ip']}.json"
+        f"https://get.geojs.io/v1/ip/geo/{client_public_ip.json()['ip']}.json"
     )
 
+    # print(response)
 
     client_city = response.json()["city"]
 
@@ -43,7 +44,7 @@ def simpleserver(request: HttpRequest):
     print()
     return JsonResponse(
         {
-            "client_ip": client_public_ip,
+            "client_ip": str(client_public_ip.json()["ip"]),
             "location": client_city,
             "greeting": f"Hello, {client_name}!, the temperature is {str(client_city_tmp)} degrees Celcius in {client_city}",
         }, json_dumps_params={"indent": 4}
