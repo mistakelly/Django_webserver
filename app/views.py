@@ -19,6 +19,11 @@ def simpleserver(request: HttpRequest):
     # get the client name
     client_name = request.GET.get("visitor_name", "Guest")
 
+    # strip of quotation marks from the client name
+    if client_name.startswith('"') and client_name.endswith('"'):
+        client_name = client_name[1:-1]
+        
+
     response = requests.get(f"https://get.geojs.io/v1/ip/geo/{client_ip}.json")
 
     if response.status_code != 200:
