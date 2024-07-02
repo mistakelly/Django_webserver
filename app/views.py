@@ -7,18 +7,24 @@ import requests
 from django.conf import settings
 
 
+
 def simpleserver(request: HttpRequest):
+
+    
+    r = requests.get(r'http://jsonip.com')
+    ip= r.json()['ip']
+    print ('Your IP is', ip)
     # get the client name
     client_name = request.GET.get("visitor_name", "Guest")
 
     # access users ip local ip_address, if application is behin d a proxy, or loadbalancer.
-    client_ip = get_client_ip(request)[0]
+    # client_ip = get_client_ip(request)[0]
 
     # get the client public ip address, using geojs api, when i tried getting the users information using the local ipaddress, geojs api returned some invalid response, so i had to use the public ip address.
     client_public_ip = requests.get(f"https://get.geojs.io/v1/ip.json")
 
     response = requests.get(
-        f"https://get.geojs.io/v1/ip/geo/{client_public_ip.json()['ip']}.json"
+        f"https://get.geojs.io/v1/ip/geo/{ip}.json"
     )
 
     # print(response)
@@ -44,7 +50,7 @@ def simpleserver(request: HttpRequest):
     print()
     return JsonResponse(
         {
-            "client_ip": str(client_public_ip.json()["ip"]),
+            "client_ip": ip,
             "location": client_city,
             "greeting": f"Hello, {client_name}!, the temperature is {str(client_city_tmp)} degrees Celcius in {client_city}",
         }, json_dumps_params={"indent": 4}
